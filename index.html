@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>シャドーイング練習帳 — Luyện nói tiếng Nhật IT</title>
+<meta name="description" content="Trang luyện shadowing tiếng Nhật cho developer dự án hệ thống bệnh viện và đơn thuốc. Có romaji bật/tắt, nghĩa tiếng Việt, tốc độ đọc và khoảng lặng để nói đè.">
+<style>
+:root{
+  --paper:#EDF0F3;
+  --card:#FFFFFF;
+  --ink:#16202B;
+  --ink-soft:#5A6875;
+  --rule:#D3DAE1;
+  --indigo:#274B7C;
+  --indigo-soft:#E3EAF4;
+  --echo:#3E7C6B;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#121821;
+    --card:#1A222D;
+    --ink:#E6ECF3;
+    --ink-soft:#93A1B0;
+    --rule:#2C3743;
+    --indigo:#8FB2E0;
+    --indigo-soft:#22303F;
+    --echo:#6FB39C;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#121821;--card:#1A222D;--ink:#E6ECF3;--ink-soft:#93A1B0;
+  --rule:#2C3743;--indigo:#8FB2E0;--indigo-soft:#22303F;--echo:#6FB39C;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Roboto,sans-serif;
+  font-size:15px;line-height:1.55;
+}
+.jp{
+  font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP","Songti SC",serif;
+  font-feature-settings:"palt";
+}
+.wrap{max-width:780px;margin:0 auto;padding:0 18px 72px}
+
+header{padding:28px 0 18px}
+h1{margin:0;font-size:19px;font-weight:600;letter-spacing:.01em}
+header p{margin:6px 0 0;color:var(--ink-soft);font-size:13.5px;max-width:62ch}
+
+nav{
+  display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--rule);
+  margin-bottom:20px;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+nav button{
+  flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;
+  padding:9px 12px;color:var(--ink-soft);font:inherit;font-size:13.5px;cursor:pointer;white-space:nowrap;
+}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--indigo);font-weight:600}
+nav button:focus-visible{outline:2px solid var(--indigo);outline-offset:-2px}
+
+.stage{
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:26px 22px 18px;margin-bottom:18px;
+}
+.role{font-size:12px;color:var(--ink-soft);letter-spacing:.04em;margin-bottom:10px;min-height:1em}
+.now{
+  font-size:clamp(22px,5.2vw,31px);line-height:1.75;margin:0;
+  min-height:2.6em;display:flex;align-items:center;
+}
+.romaji{color:var(--echo);font-size:14px;letter-spacing:.01em;margin:8px 0 0;min-height:1.4em}
+.gloss{color:var(--ink-soft);font-size:13.5px;margin:8px 0 0;min-height:1.4em}
+.romaji.hidden,.gloss.hidden{visibility:hidden}
+.bar{height:3px;background:var(--rule);margin-top:18px;position:relative;overflow:hidden}
+.bar span{
+  position:absolute;inset:0 auto 0 0;width:0;background:var(--indigo);
+}
+.bar.echo span{background:var(--echo)}
+.barlabel{font-size:12px;color:var(--ink-soft);margin-top:7px;min-height:1.2em}
+
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+button.act{
+  font:inherit;font-size:14px;padding:9px 16px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--indigo);background:var(--indigo);color:var(--card);
+}
+button.act.ghost{background:none;color:var(--indigo)}
+button.act:focus-visible,select:focus-visible,label:focus-within{outline:2px solid var(--indigo);outline-offset:2px}
+button.toggle{
+  font:inherit;font-size:13px;padding:7px 13px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--rule);background:none;color:var(--ink-soft);
+}
+button.toggle[aria-pressed="true"]{border-color:var(--echo);color:var(--echo);font-weight:600}
+button.toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.opt{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft)}
+select{font:inherit;font-size:13px;padding:5px 7px;background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:2px}
+
+ol.lines{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+ol.lines li{border-bottom:1px solid var(--rule)}
+ol.lines button{
+  width:100%;text-align:left;background:none;border:0;padding:13px 10px 13px 0;
+  font:inherit;color:inherit;cursor:pointer;display:grid;
+  grid-template-columns:82px 1fr;gap:4px 12px;align-items:baseline;
+}
+ol.lines button:hover{background:var(--indigo-soft)}
+ol.lines li.on{background:var(--indigo-soft)}
+ol.lines li.on .l-ja{color:var(--indigo)}
+.l-role{font-size:11.5px;color:var(--ink-soft);padding-top:3px}
+.l-ja{font-size:17px;line-height:1.7}
+.l-ro{grid-column:2;font-size:12.5px;color:var(--echo);letter-spacing:.01em}
+.l-vi{grid-column:2;font-size:12.5px;color:var(--ink-soft)}
+.l-ro.hidden,.l-vi.hidden{display:none}
+.sep{grid-column:1/-1;font-size:12px;color:var(--ink-soft);padding-top:4px}
+
+.note{font-size:12.5px;color:var(--ink-soft);margin-top:26px;max-width:62ch}
+.note kbd{
+  font:inherit;font-size:11.5px;border:1px solid var(--rule);border-bottom-width:2px;
+  border-radius:3px;padding:1px 5px;color:var(--ink);
+}
+.warn{background:var(--indigo-soft);border-left:3px solid var(--indigo);padding:11px 13px;font-size:13px;margin-bottom:18px}
+[hidden]{display:none !important}
+@media (prefers-reduced-motion: reduce){.bar span{transition:none !important}}
+@media (max-width:520px){
+  ol.lines button{grid-template-columns:1fr;gap:3px}
+  .l-ro,.l-vi{grid-column:1}
+  .l-role{padding-top:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1 class="jp">シャドーイング練習帳</h1>
+  <p>Bấm một câu để nghe. Bấm “Chạy shadowing” để máy đọc từng câu rồi chừa khoảng lặng đúng bằng độ dài câu — bạn nói đè lên khoảng lặng đó. Dòng romaji nằm dưới mỗi câu, tắt được khi đã quen.</p>
+</header>
+
+<div class="warn" id="novoice" hidden>
+  Thiết bị này chưa có giọng đọc tiếng Nhật. Trên Windows: Settings → Time &amp; language → Language → thêm 日本語 và tải Speech. Trên Android: cài Google 音声サービス. Safari và iPhone thường đã có sẵn giọng Kyoko.
+</div>
+
+<nav id="tabs" role="tablist"></nav>
+
+<section class="stage" aria-live="polite">
+  <div class="role jp" id="nowRole"></div>
+  <p class="now jp" id="nowJa">—</p>
+  <p class="romaji" id="nowRo"></p>
+  <p class="gloss" id="nowVi"></p>
+  <div class="bar" id="bar"><span id="barFill"></span></div>
+  <div class="barlabel" id="barLabel">Sẵn sàng</div>
+</section>
+
+<div class="controls">
+  <button class="act" id="run">Chạy shadowing</button>
+  <button class="act ghost" id="stop" disabled>Dừng</button>
+  <button class="toggle" id="toggleRo" aria-pressed="true">Romaji: bật</button>
+  <button class="toggle" id="toggleVi" aria-pressed="true">Nghĩa Việt: bật</button>
+  <label class="opt">Tốc độ
+    <select id="rate">
+      <option value="0.6">0,6×</option>
+      <option value="0.75">0,75×</option>
+      <option value="0.9" selected>0,9×</option>
+      <option value="1">1,0×</option>
+      <option value="1.15">1,15×</option>
+    </select>
+  </label>
+  <label class="opt">Lặp mỗi câu
+    <select id="reps">
+      <option value="1">1 lần</option>
+      <option value="2" selected>2 lần</option>
+      <option value="3">3 lần</option>
+    </select>
+  </label>
+  <label class="opt">Khoảng lặng
+    <select id="gap">
+      <option value="0">Không</option>
+      <option value="1" selected>Bằng câu</option>
+      <option value="1.4">Dài hơn 40%</option>
+    </select>
+  </label>
+  <label class="opt">Giọng
+    <select id="voice"></select>
+  </label>
+</div>
+
+<ol class="lines" id="list"></ol>
+
+<p class="note">
+  Cách luyện hiệu quả nhất: vòng 1 nghe không nói, vòng 2 nói nhỏ theo cùng lúc (không chờ hết câu),
+  vòng 3 tắt romaji và nghĩa tiếng Việt rồi nói lại từ trí nhớ. Mỗi ngày một mục là đủ.
+  Phím tắt: <kbd>Space</kbd> chạy/dừng, <kbd>R</kbd> nghe lại câu hiện tại, <kbd>B</kbd> bật tắt romaji, <kbd>V</kbd> bật tắt nghĩa.
+</p>
+
+</div>
+
+<script>
+const SETS = [
+{ id:"s1", tab:"① 結論→理由→提案", title:"Kết luận trước",
+  lines:[
+    {g:"Hoãn release vì test chưa xong"},
+    {r:"結論", ja:"処方箋発行機能のリリースを1週間延期した方がよいと思います。",
+     ro:"Shohōsen hakkō kinō no rirīsu o isshūkan enki shita hō ga yoi to omoimasu.",
+     vi:"Tôi nghĩ nên hoãn release chức năng phát hành đơn thuốc 1 tuần."},
+    {r:"理由", ja:"理由は、結合テストがまだ70パーセントしか完了していないためです。",
+     ro:"Riyū wa, ketsugō tesuto ga mada nanajuppāsento shika kanryō shite inai tame desu.",
+     vi:"Lý do là integration test mới xong 70%."},
+    {r:"提案", ja:"来週金曜日までテスト期間を延長してみてはいかがでしょうか。",
+     ro:"Raishū kin'yōbi made tesuto kikan o enchō shite mite wa ikaga deshō ka.",
+     vi:"Hay là kéo dài thời gian test đến thứ Sáu tuần sau?"},
+    {g:"Tăng thời gian code review"},
+    {r:"結論", ja:"コードレビューの時間を増やした方がよいと思います。",
+     ro:"Kōdo rebyū no jikan o fuyashita hō ga yoi to omoimasu.",
+     vi:"Tôi nghĩ nên tăng thời gian code review."},
+    {r:"理由", ja:"理由は、患者情報の登録画面で、リリース後の不具合が先月より増えているためです。",
+     ro:"Riyū wa, kanja jōhō no tōroku gamen de, rirīsu go no fuguai ga sengetsu yori fuete iru tame desu.",
+     vi:"Vì bug sau release ở màn hình đăng ký thông tin bệnh nhân tăng so với tháng trước."},
+    {r:"提案", ja:"一日三十分、レビュー専用の時間を設けるという方法もあるかと思います。",
+     ro:"Ichinichi sanjuppun, rebyū sen'yō no jikan o mōkeru to iu hōhō mo aru ka to omoimasu.",
+     vi:"Tôi nghĩ cũng có thể dành riêng 30 phút mỗi ngày cho review."},
+    {g:"Tách release làm hai lần"},
+    {r:"結論", ja:"一部の機能を先にリリースした方がよいと思います。",
+     ro:"Ichibu no kinō o saki ni rirīsu shita hō ga yoi to omoimasu.",
+     vi:"Tôi nghĩ nên release trước một phần chức năng."},
+    {r:"理由", ja:"理由は、電子カルテの参照機能は完成しておりますが、処方履歴の検索機能のテストが終わっていないためです。",
+     ro:"Riyū wa, denshi karute no sanshō kinō wa kansei shite orimasu ga, shohō rireki no kensaku kinō no tesuto ga owatte inai tame desu.",
+     vi:"Vì chức năng xem bệnh án đã xong, nhưng test tìm kiếm lịch sử kê đơn thì chưa."},
+    {r:"提案", ja:"検索機能のみ次回リリースに回すことをご検討いただけますでしょうか。",
+     ro:"Kensaku kinō nomi jikai rirīsu ni mawasu koto o go-kentō itadakemasu deshō ka.",
+     vi:"Anh/chị cân nhắc đẩy riêng chức năng tìm kiếm sang lần release sau được không ạ?"},
+    {g:"Thêm unit test cho phần tính liều"},
+    {r:"結論", ja:"投薬量の計算処理には、ユニットテストを追加した方がよいと思います。",
+     ro:"Tōyakuryō no keisan shori ni wa, yunitto tesuto o tsuika shita hō ga yoi to omoimasu.",
+     vi:"Tôi nghĩ nên thêm unit test cho xử lý tính liều thuốc."},
+    {r:"理由", ja:"理由は、計算を誤ると患者様の安全に直接関わるためです。",
+     ro:"Riyū wa, keisan o ayamaru to kanja-sama no anzen ni chokusetsu kakawaru tame desu.",
+     vi:"Vì tính sai sẽ ảnh hưởng trực tiếp đến an toàn bệnh nhân."},
+    {r:"提案", ja:"まず計算ロジックの部分だけでも自動テストを作成してみてはいかがでしょうか。",
+     ro:"Mazu keisan rojikku no bubun dake demo jidō tesuto o sakusei shite mite wa ikaga deshō ka.",
+     vi:"Trước mắt hay là làm test tự động riêng cho phần logic tính toán?"},
+    {g:"Đưa CI/CD vào dự án"},
+    {r:"結論", ja:"シーアイ・シーディーを導入した方がよいと思います。",
+     ro:"Shī ai shī dī o dōnyū shita hō ga yoi to omoimasu.",
+     vi:"Tôi nghĩ nên đưa CI/CD vào."},
+    {r:"理由", ja:"理由は、現在ビルドとデプロイを手作業で行っており、ミスが発生しやすいためです。",
+     ro:"Riyū wa, genzai birudo to depuroi o tesagyō de okonatte ori, misu ga hassei shiyasui tame desu.",
+     vi:"Vì hiện build và deploy làm tay nên dễ sai sót."},
+    {r:"提案", ja:"まずは検証環境から自動化を試してみてはいかがでしょうか。",
+     ro:"Mazu wa kenshō kankyō kara jidōka o tameshite mite wa ikaga deshō ka.",
+     vi:"Hay là thử tự động hóa từ môi trường kiểm thử trước?"}
+  ]},
+
+{ id:"s2", tab:"② 問題→原因→影響→対応", title:"Báo sự cố",
+  lines:[
+    {g:"Không phát hành được đơn thuốc trên production"},
+    {r:"問題", ja:"本番環境で処方箋が発行できない事象が発生しています。",
+     ro:"Honban kankyō de shohōsen ga hakkō dekinai jishō ga hassei shite imasu.",
+     vi:"Trên production đang xảy ra hiện tượng không phát hành được đơn thuốc."},
+    {r:"原因", ja:"原因は、印刷用のエーピーアイがタイムアウトしているためです。",
+     ro:"Gen'in wa, insatsu-yō no ē pī ai ga taimuauto shite iru tame desu.",
+     vi:"Nguyên nhân là API in bị timeout."},
+    {r:"影響", ja:"現在、外来の窓口で処方箋の発行が止まっている状態です。",
+     ro:"Genzai, gairai no madoguchi de shohōsen no hakkō ga tomatte iru jōtai desu.",
+     vi:"Hiện tại quầy ngoại trú đang không phát hành được đơn."},
+    {r:"対応", ja:"ただいま復旧対応を進めております。三十分後に再度ご報告いたします。",
+     ro:"Tadaima fukkyū taiō o susumete orimasu. Sanjuppun go ni saido go-hōkoku itashimasu.",
+     vi:"Đang tiến hành khôi phục. 30 phút nữa tôi sẽ báo cáo lại."},
+    {g:"Nhân viên y tế không đăng nhập được"},
+    {r:"問題", ja:"認証サーバーで五百エラーが発生しています。",
+     ro:"Ninshō sābā de gohyaku erā ga hassei shite imasu.",
+     vi:"Server xác thực đang lỗi 500."},
+    {r:"原因", ja:"原因は、昨夜の設定変更時の操作ミスです。",
+     ro:"Gen'in wa, sakuya no settei henkō ji no sōsa misu desu.",
+     vi:"Nguyên nhân là thao tác sai khi đổi cấu hình tối qua."},
+    {r:"影響", ja:"現在、一部の医師と看護師の方がログインできない状態です。",
+     ro:"Genzai, ichibu no ishi to kangoshi no kata ga roguin dekinai jōtai desu.",
+     vi:"Hiện một số bác sĩ và điều dưỡng không đăng nhập được."},
+    {r:"対応", ja:"設定を元に戻す対応を進めており、十分後に状況を共有いたします。",
+     ro:"Settei o moto ni modosu taiō o susumete ori, juppun go ni jōkyō o kyōyū itashimasu.",
+     vi:"Đang rollback cấu hình, 10 phút nữa sẽ chia sẻ tình hình."},
+    {g:"Batch đồng bộ dữ liệu bệnh nhân fail"},
+    {r:"問題", ja:"夜間の患者データ連携バッチが異常終了しました。",
+     ro:"Yakan no kanja dēta renkei batchi ga ijō shūryō shimashita.",
+     vi:"Batch đồng bộ dữ liệu bệnh nhân ban đêm đã kết thúc bất thường."},
+    {r:"原因", ja:"原因は、想定外の文字コードによるエラーです。",
+     ro:"Gen'in wa, sōteigai no moji kōdo ni yoru erā desu.",
+     vi:"Nguyên nhân là lỗi do bảng mã ngoài dự kiến."},
+    {r:"影響", ja:"そのため、昨日分の患者情報が最新の状態になっておりません。",
+     ro:"Sono tame, kinō-bun no kanja jōhō ga saishin no jōtai ni natte orimasen.",
+     vi:"Do đó dữ liệu bệnh nhân hôm qua chưa được cập nhật."},
+    {r:"対応", ja:"本日午前中に再実行を行い、完了次第ご連絡いたします。",
+     ro:"Honjitsu gozen-chū ni saijikkō o okonai, kanryō shidai go-renraku itashimasu.",
+     vi:"Sáng nay sẽ chạy lại, xong sẽ liên hệ ngay."},
+    {g:"Màn hình lịch sử kê đơn chậm"},
+    {r:"問題", ja:"処方履歴画面の表示が遅くなっています。",
+     ro:"Shohō rireki gamen no hyōji ga osoku natte imasu.",
+     vi:"Màn hình lịch sử kê đơn đang hiển thị chậm."},
+    {r:"原因", ja:"原因は、データ量の増加により、データベースへのアクセスに時間がかかっているためです。",
+     ro:"Gen'in wa, dēta-ryō no zōka ni yori, dētabēsu e no akusesu ni jikan ga kakatte iru tame desu.",
+     vi:"Vì dữ liệu tăng nên truy cập DB mất thời gian."},
+    {r:"影響", ja:"検索のレスポンスに五秒ほど遅延が出ています。",
+     ro:"Kensaku no resuponsu ni gobyō hodo chien ga dete imasu.",
+     vi:"Phản hồi tìm kiếm trễ khoảng 5 giây."},
+    {r:"対応", ja:"現在インデックスの見直しを行っており、明日中に改善予定です。",
+     ro:"Genzai indekkusu no minaoshi o okonatte ori, ashita-jū ni kaizen yotei desu.",
+     vi:"Đang rà lại index, dự kiến cải thiện trong ngày mai."},
+    {g:"Liên kết hệ thống bảo hiểm bị dừng"},
+    {r:"問題", ja:"保険資格確認システムとの通信が失敗しています。",
+     ro:"Hoken shikaku kakunin shisutemu to no tsūshin ga shippai shite imasu.",
+     vi:"Kết nối với hệ thống xác nhận tư cách bảo hiểm đang thất bại."},
+    {r:"原因", ja:"原因は、先方側のメンテナンスの可能性があります。",
+     ro:"Gen'in wa, senpō-gawa no mentenansu no kanōsei ga arimasu.",
+     vi:"Nguyên nhân có thể là phía đối tác đang bảo trì."},
+    {r:"影響", ja:"現在、受付時の資格確認がご利用いただけない状態です。",
+     ro:"Genzai, uketsuke-ji no shikaku kakunin ga go-riyō itadakenai jōtai desu.",
+     vi:"Hiện không dùng được chức năng xác nhận bảo hiểm lúc tiếp nhận."},
+    {r:"対応", ja:"先方に確認中です。判明次第すぐに共有いたします。",
+     ro:"Senpō ni kakunin-chū desu. Hanmei shidai sugu ni kyōyū itashimasu.",
+     vi:"Đang xác nhận với đối tác, rõ đến đâu tôi chia sẻ ngay."},
+    {g:"Bug ở phần tính liều thuốc"},
+    {r:"問題", ja:"投薬量の計算に不具合を確認しました。",
+     ro:"Tōyakuryō no keisan ni fuguai o kakunin shimashita.",
+     vi:"Đã xác nhận có bug ở phần tính liều thuốc."},
+    {r:"原因", ja:"原因は、小数点の切り上げ処理の誤りです。",
+     ro:"Gen'in wa, shōsūten no kiriage shori no ayamari desu.",
+     vi:"Nguyên nhân là xử lý làm tròn lên phần thập phân bị sai."},
+    {r:"影響", ja:"一部の処方データで、実際より多い数量が表示される可能性があります。",
+     ro:"Ichibu no shohō dēta de, jissai yori ōi sūryō ga hyōji sareru kanōsei ga arimasu.",
+     vi:"Một số dữ liệu kê đơn có thể hiển thị số lượng nhiều hơn thực tế."},
+    {r:"対応", ja:"現在修正対応中です。影響範囲を調査のうえ、本日中に報告いたします。",
+     ro:"Genzai shūsei taiō-chū desu. Eikyō han'i o chōsa no ue, honjitsu-chū ni hōkoku itashimasu.",
+     vi:"Đang sửa. Sau khi điều tra phạm vi ảnh hưởng sẽ báo cáo trong hôm nay."}
+  ]},
+
+{ id:"s3", tab:"③ 確認・質問", title:"Xác nhận yêu cầu",
+  lines:[
+    {g:"Hai câu xương sống"},
+    {r:"確認", ja:"という理解で合っていますでしょうか。",
+     ro:"...to iu rikai de atte imasu deshō ka.",
+     vi:"Tôi hiểu như vậy có đúng không ạ?"},
+    {r:"質問", ja:"についてもう少し教えていただけますか。",
+     ro:"...ni tsuite mō sukoshi oshiete itadakemasu ka.",
+     vi:"Anh/chị giải thích thêm về việc đó được không ạ?"},
+    {g:"Thêm tìm kiếm vào màn hình quản lý bệnh nhân"},
+    {r:"確認", ja:"患者管理画面に検索機能を追加する、という理解で合っていますでしょうか。",
+     ro:"Kanja kanri gamen ni kensaku kinō o tsuika suru, to iu rikai de atte imasu deshō ka.",
+     vi:"Tôi hiểu là thêm chức năng tìm kiếm vào màn hình quản lý bệnh nhân, đúng không ạ?"},
+    {r:"範囲", ja:"検索対象は患者氏名のみでしょうか。診察券番号でも検索できるようにしますか。",
+     ro:"Kensaku taishō wa kanja shimei nomi deshō ka. Shinsatsuken bangō de mo kensaku dekiru yō ni shimasu ka.",
+     vi:"Chỉ tìm theo tên bệnh nhân thôi ạ? Có cần tìm theo số thẻ khám không?"},
+    {r:"詳細", ja:"部分一致でよろしいでしょうか。",
+     ro:"Bubun itchi de yoroshii deshō ka.",
+     vi:"Tìm kiếm khớp một phần được không ạ?"},
+    {r:"詳細", ja:"カナ検索にも対応する必要はありますでしょうか。",
+     ro:"Kana kensaku ni mo taiō suru hitsuyō wa arimasu deshō ka.",
+     vi:"Có cần hỗ trợ tìm bằng katakana không ạ?"},
+    {r:"納期", ja:"希望納期をお伺いしてもよろしいでしょうか。",
+     ro:"Kibō nōki o o-ukagai shite mo yoroshii deshō ka.",
+     vi:"Cho tôi hỏi hạn mong muốn được không ạ?"},
+    {g:"Xuất danh sách đơn thuốc ra CSV"},
+    {r:"確認", ja:"処方データをシーエスブイで出力する、という理解でよろしいでしょうか。",
+     ro:"Shohō dēta o shī esu bui de shutsuryoku suru, to iu rikai de yoroshii deshō ka.",
+     vi:"Tôi hiểu là xuất dữ liệu kê đơn ra CSV, đúng không ạ?"},
+    {r:"範囲", ja:"全件でしょうか、それとも期間で絞り込みますか。",
+     ro:"Zenken deshō ka, soretomo kikan de shiborikomimasu ka.",
+     vi:"Xuất toàn bộ hay lọc theo khoảng thời gian ạ?"},
+    {r:"詳細", ja:"出力項目は決まっていますでしょうか。",
+     ro:"Shutsuryoku kōmoku wa kimatte imasu deshō ka.",
+     vi:"Các cột cần xuất đã được quyết chưa ạ?"},
+    {r:"詳細", ja:"文字コードの指定はありますか。シフトジスでよろしいでしょうか。",
+     ro:"Moji kōdo no shitei wa arimasu ka. Shifuto jisu de yoroshii deshō ka.",
+     vi:"Có chỉ định bảng mã không ạ? Shift_JIS được không ạ?"},
+    {r:"権限", ja:"個人情報が含まれますが、出力できる権限に制限は必要でしょうか。",
+     ro:"Kojin jōhō ga fukumaremasu ga, shutsuryoku dekiru kengen ni seigen wa hitsuyō deshō ka.",
+     vi:"Có chứa thông tin cá nhân, có cần giới hạn quyền xuất không ạ?"},
+    {g:"Dashboard sau khi đăng nhập"},
+    {r:"確認", ja:"ログイン後にダッシュボードを表示する、という理解で合っていますでしょうか。",
+     ro:"Roguin go ni dasshubōdo o hyōji suru, to iu rikai de atte imasu deshō ka.",
+     vi:"Tôi hiểu là sau khi đăng nhập thì hiển thị dashboard, đúng không ạ?"},
+    {r:"範囲", ja:"表示する情報は、本日の予約数と未処理の処方箋件数でよろしいでしょうか。",
+     ro:"Hyōji suru jōhō wa, honjitsu no yoyaku-sū to mishori no shohōsen kensū de yoroshii deshō ka.",
+     vi:"Thông tin hiển thị là số lượt đặt khám hôm nay và số đơn thuốc chưa xử lý, đúng không ạ?"},
+    {r:"詳細", ja:"医師と受付担当で表示内容は変わりますでしょうか。",
+     ro:"Ishi to uketsuke tantō de hyōji naiyō wa kawarimasu deshō ka.",
+     vi:"Nội dung hiển thị có khác nhau giữa bác sĩ và nhân viên tiếp nhận không ạ?"},
+    {g:"Nghe nhanh, bắt bốn từ khóa"},
+    {r:"確認", ja:"金曜日までに処方箋エーピーアイの仕様書を確認し、問題があれば修正する、という理解で合っていますでしょうか。",
+     ro:"Kin'yōbi made ni shohōsen ē pī ai no shiyōsho o kakunin shi, mondai ga areba shūsei suru, to iu rikai de atte imasu deshō ka.",
+     vi:"Tôi hiểu là đến thứ Sáu kiểm tra spec API đơn thuốc, có vấn đề thì sửa, đúng không ạ?"},
+    {r:"質問", ja:"修正範囲についてもう少し教えていただけますか。",
+     ro:"Shūsei han'i ni tsuite mō sukoshi oshiete itadakemasu ka.",
+     vi:"Cho tôi hỏi thêm về phạm vi sửa được không ạ?"},
+    {g:"Gặp từ nghiệp vụ y tế không biết"},
+    {r:"質問", ja:"レセプトとはどういう意味でしょうか。",
+     ro:"Reseputo to wa dō iu imi deshō ka.",
+     vi:"Reseputo nghĩa là gì ạ?"},
+    {r:"質問", ja:"恐れ入りますが、業務の流れについてもう少し詳しく教えていただけますでしょうか。",
+     ro:"Osoreirimasu ga, gyōmu no nagare ni tsuite mō sukoshi kuwashiku oshiete itadakemasu deshō ka.",
+     vi:"Xin lỗi, anh/chị giải thích kỹ hơn về luồng nghiệp vụ được không ạ?"}
+  ]},
+
+{ id:"s4", tab:"④ やわらかい提案", title:"Đề xuất mềm mại",
+  lines:[
+    {g:"Câu mạnh → câu mềm (chỉ shadow câu mềm)"},
+    {r:"柔らか", ja:"こちらの設計はいかがでしょうか。",
+     ro:"Kochira no sekkei wa ikaga deshō ka.",
+     vi:"Thiết kế bên này thì thế nào ạ? (thay cho: この設計の方がいいです)"},
+    {r:"柔らか", ja:"先にテストを実施してみてはどうでしょうか。",
+     ro:"Saki ni tesuto o jisshi shite mite wa dō deshō ka.",
+     vi:"Hay là làm test trước? (thay cho: 先にテストした方がいいです)"},
+    {r:"柔らか", ja:"仕様変更をご検討いただけますでしょうか。",
+     ro:"Shiyō henkō o go-kentō itadakemasu deshō ka.",
+     vi:"Anh/chị cân nhắc đổi spec được không ạ? (thay cho: 仕様を変更してください)"},
+    {r:"柔らか", ja:"この機能は見直してもよいかもしれません。",
+     ro:"Kono kinō wa minaoshite mo yoi kamo shiremasen.",
+     vi:"Có lẽ nên xem lại chức năng này. (thay cho: この機能は不要です)"},
+    {r:"柔らか", ja:"その日程は少し厳しいかもしれません。",
+     ro:"Sono nittei wa sukoshi kibishii kamo shiremasen.",
+     vi:"Lịch đó có lẽ hơi căng ạ. (thay cho: その日程では無理です)"},
+    {r:"柔らか", ja:"想定と異なる動作を確認しました。",
+     ro:"Sōtei to kotonaru dōsa o kakunin shimashita.",
+     vi:"Tôi thấy hoạt động khác với dự kiến. (thay cho: バグです)"},
+    {g:"Tự động hóa test"},
+    {r:"提案", ja:"品質向上のために、テストの一部を自動化してみてはいかがでしょうか。",
+     ro:"Hinshitsu kōjō no tame ni, tesuto no ichibu o jidōka shite mite wa ikaga deshō ka.",
+     vi:"Để nâng chất lượng, hay là tự động hóa một phần test?"},
+    {r:"効果", ja:"患者データの登録処理はリグレッションが起きやすいので、工数削減にもつながると思います。",
+     ro:"Kanja dēta no tōroku shori wa riguresshon ga okiyasui node, kōsū sakugen ni mo tsunagaru to omoimasu.",
+     vi:"Phần đăng ký dữ liệu bệnh nhân dễ hồi quy nên cũng giảm được man-hour."},
+    {g:"Thống nhất format spec"},
+    {r:"提案", ja:"認識のズレを防ぐために、仕様書のフォーマットを統一するという方法もあるかと思います。",
+     ro:"Ninshiki no zure o fusegu tame ni, shiyōsho no fōmatto o tōitsu suru to iu hōhō mo aru ka to omoimasu.",
+     vi:"Để tránh lệch nhận thức, tôi nghĩ cũng có thể thống nhất format tài liệu spec."},
+    {r:"効果", ja:"手戻りの削減が期待できます。",
+     ro:"Temodori no sakugen ga kitai dekimasu.",
+     vi:"Có thể kỳ vọng giảm việc phải làm lại."},
+    {g:"Rút ngắn họp định kỳ"},
+    {r:"提案", ja:"開発時間を確保するために、定例会議を三十分に短縮してみてはいかがでしょうか。",
+     ro:"Kaihatsu jikan o kakuho suru tame ni, teirei kaigi o sanjuppun ni tanshuku shite mite wa ikaga deshō ka.",
+     vi:"Để đảm bảo thời gian dev, hay là rút họp định kỳ còn 30 phút?"},
+    {r:"効果", ja:"議題を事前に共有していただければ、三十分でも十分かと思います。",
+     ro:"Gidai o jizen ni kyōyū shite itadakereba, sanjuppun demo jūbun ka to omoimasu.",
+     vi:"Nếu chia sẻ trước nội dung họp thì tôi nghĩ 30 phút là đủ."},
+    {g:"Viết manual cho nghiệp vụ"},
+    {r:"提案", ja:"問い合わせ対応を効率化するために、処方箋登録の操作マニュアルを作成してみてはいかがでしょうか。",
+     ro:"Toiawase taiō o kōritsuka suru tame ni, shohōsen tōroku no sōsa manyuaru o sakusei shite mite wa ikaga deshō ka.",
+     vi:"Để xử lý câu hỏi hiệu quả hơn, hay là viết manual thao tác đăng ký đơn thuốc?"},
+    {r:"効果", ja:"同じご質問への対応時間を減らせると思います。",
+     ro:"Onaji go-shitsumon e no taiō jikan o heraseru to omoimasu.",
+     vi:"Tôi nghĩ sẽ giảm được thời gian trả lời cùng một câu hỏi."},
+    {g:"Xin môi trường kiểm thử giống production"},
+    {r:"提案", ja:"本番障害を防ぐために、本番に近い検証環境をご用意いただけますでしょうか。",
+     ro:"Honban shōgai o fusegu tame ni, honban ni chikai kenshō kankyō o go-yōi itadakemasu deshō ka.",
+     vi:"Để tránh sự cố production, anh/chị chuẩn bị giúp môi trường kiểm thử gần giống production được không ạ?"},
+    {r:"効果", ja:"患者データの件数が多い状態での動作確認ができ、性能問題の早期発見につながります。",
+     ro:"Kanja dēta no kensū ga ōi jōtai de no dōsa kakunin ga deki, seinō mondai no sōki hakken ni tsunagarimasu.",
+     vi:"Có thể kiểm tra khi dữ liệu bệnh nhân nhiều, giúp phát hiện sớm vấn đề hiệu năng."},
+    {g:"Xin thêm thời gian"},
+    {r:"提案", ja:"品質を確保するために、スケジュールの見直しをご検討いただけますでしょうか。",
+     ro:"Hinshitsu o kakuho suru tame ni, sukejūru no minaoshi o go-kentō itadakemasu deshō ka.",
+     vi:"Để đảm bảo chất lượng, anh/chị cân nhắc xem lại lịch được không ạ?"},
+    {r:"効果", ja:"二日いただければ、テストを最後まで完了できる見込みです。",
+     ro:"Futsuka itadakereba, tesuto o saigo made kanryō dekiru mikomi desu.",
+     vi:"Nếu có thêm 2 ngày, dự kiến test sẽ xong hết."}
+  ]},
+
+{ id:"s5", tab:"⑤ 反対意見", title:"Phản đối lịch sự",
+  lines:[
+    {g:"Sếp muốn release đúng lịch"},
+    {r:"共感", ja:"おっしゃることは分かります。",
+     ro:"Ossharu koto wa wakarimasu.",
+     vi:"Tôi hiểu ý anh/chị."},
+    {r:"反対", ja:"ただ、私は少し違う考えです。",
+     ro:"Tada, watashi wa sukoshi chigau kangae desu.",
+     vi:"Tuy nhiên tôi có suy nghĩ hơi khác."},
+    {r:"理由", ja:"理由は、処方箋の印刷処理のテストがまだ七十パーセントで、重要な不具合が残る可能性があるためです。",
+     ro:"Riyū wa, shohōsen no insatsu shori no tesuto ga mada nanajuppāsento de, jūyō na fuguai ga nokoru kanōsei ga aru tame desu.",
+     vi:"Vì test phần in đơn thuốc mới 70%, có thể còn bug quan trọng."},
+    {r:"提案", ja:"患者管理機能のみ予定通りリリースし、処方箋機能を翌週に回すという方法もあるかと思います。",
+     ro:"Kanja kanri kinō nomi yotei dōri rirīsu shi, shohōsen kinō o yokushū ni mawasu to iu hōhō mo aru ka to omoimasu.",
+     vi:"Tôi nghĩ có thể release đúng hạn phần quản lý bệnh nhân, còn đơn thuốc đẩy sang tuần sau."},
+    {g:"Sếp muốn họp một tiếng mỗi ngày"},
+    {r:"共感", ja:"確かに、毎日の情報共有は大切だと思います。",
+     ro:"Tashika ni, mainichi no jōhō kyōyū wa taisetsu da to omoimasu.",
+     vi:"Đúng là chia sẻ thông tin hằng ngày rất quan trọng."},
+    {r:"反対", ja:"一方で、一時間は少し長いかもしれません。",
+     ro:"Ippō de, ichijikan wa sukoshi nagai kamo shiremasen.",
+     vi:"Mặt khác, một tiếng có lẽ hơi dài."},
+    {r:"理由", ja:"理由は、開発に集中できる時間が減ってしまうためです。",
+     ro:"Riyū wa, kaihatsu ni shūchū dekiru jikan ga hette shimau tame desu.",
+     vi:"Vì thời gian tập trung làm dev sẽ giảm."},
+    {r:"提案", ja:"十五分の朝会に変更してみてはいかがでしょうか。",
+     ro:"Jūgofun no asakai ni henkō shite mite wa ikaga deshō ka.",
+     vi:"Hay là đổi thành họp sáng 15 phút?"},
+    {g:"Chưa nên dùng framework mới"},
+    {r:"共感", ja:"新しい技術を取り入れるという点には賛成です。",
+     ro:"Atarashii gijutsu o toriireru to iu ten ni wa sansei desu.",
+     vi:"Về việc áp dụng công nghệ mới thì tôi đồng ý."},
+    {r:"反対", ja:"ただ、今回のプロジェクトで導入するのは少しリスクがあるかもしれません。",
+     ro:"Tada, konkai no purojekuto de dōnyū suru no wa sukoshi risuku ga aru kamo shiremasen.",
+     vi:"Nhưng đưa vào dự án lần này có lẽ hơi rủi ro."},
+    {r:"理由", ja:"理由は、チーム内に経験者が少なく、学習コストがかかるためです。",
+     ro:"Riyū wa, chīmu-nai ni keikensha ga sukunaku, gakushū kosuto ga kakaru tame desu.",
+     vi:"Vì trong team ít người có kinh nghiệm, tốn chi phí học."},
+    {r:"提案", ja:"次回の小規模な案件で試してみるのはいかがでしょうか。",
+     ro:"Jikai no shōkibo na anken de tameshite miru no wa ikaga deshō ka.",
+     vi:"Hay là thử ở một dự án nhỏ lần tới?"},
+    {g:"Bị yêu cầu bỏ test để kịp deadline"},
+    {r:"共感", ja:"納期を守ることが最優先だというお考えは理解しております。",
+     ro:"Nōki o mamoru koto ga saiyūsen da to iu o-kangae wa rikai shite orimasu.",
+     vi:"Tôi hiểu quan điểm ưu tiên cao nhất là giữ đúng hạn."},
+    {r:"反対", ja:"ただ、投薬量の計算部分のテストは省略しない方がよいと考えております。",
+     ro:"Tada, tōyakuryō no keisan bubun no tesuto wa shōryaku shinai hō ga yoi to kangaete orimasu.",
+     vi:"Nhưng tôi nghĩ không nên bỏ test phần tính liều thuốc."},
+    {r:"理由", ja:"理由は、誤りがあった場合、患者様の安全に直接影響するためです。",
+     ro:"Riyū wa, ayamari ga atta baai, kanja-sama no anzen ni chokusetsu eikyō suru tame desu.",
+     vi:"Vì nếu sai sẽ ảnh hưởng trực tiếp đến an toàn bệnh nhân."},
+    {r:"提案", ja:"計算処理のテストのみ実施し、画面の細かい確認は次回に回すという方法もあるかと思います。",
+     ro:"Keisan shori no tesuto nomi jisshi shi, gamen no komakai kakunin wa jikai ni mawasu to iu hōhō mo aru ka to omoimasu.",
+     vi:"Có thể chỉ test phần tính toán, còn kiểm tra chi tiết màn hình để lần sau."},
+    {g:"Không đồng ý với thiết kế phía Nhật"},
+    {r:"共感", ja:"ご提案いただいた設計、ありがとうございます。",
+     ro:"Go-teian itadaita sekkei, arigatō gozaimasu.",
+     vi:"Cảm ơn anh/chị đã đề xuất thiết kế."},
+    {r:"反対", ja:"一点だけ、気になる点がございます。",
+     ro:"Itten dake, ki ni naru ten ga gozaimasu.",
+     vi:"Chỉ có một điểm tôi hơi băn khoăn."},
+    {r:"理由", ja:"理由は、この構成ですと患者データが増えた際に検索が遅くなる可能性があるためです。",
+     ro:"Riyū wa, kono kōsei desu to kanja dēta ga fueta sai ni kensaku ga osoku naru kanōsei ga aru tame desu.",
+     vi:"Vì với cấu trúc này, khi dữ liệu bệnh nhân tăng thì tìm kiếm có thể chậm."},
+    {r:"提案", ja:"検索用のテーブルを分けることもご検討いただけますでしょうか。",
+     ro:"Kensaku-yō no tēburu o wakeru koto mo go-kentō itadakemasu deshō ka.",
+     vi:"Anh/chị cân nhắc tách bảng riêng cho tìm kiếm được không ạ?"}
+  ]},
+
+{ id:"s6", tab:"⑥ 相手別", title:"Đổi cách nói theo người nghe",
+  lines:[
+    {g:"Lỗi server xác thực"},
+    {r:"エンジニア", ja:"認証サーバーで五百エラーが発生しています。",
+     ro:"Ninshō sābā de gohyaku erā ga hassei shite imasu.",
+     vi:"Server xác thực đang lỗi 500."},
+    {r:"営業", ja:"ログイン機能に問題が発生しています。",
+     ro:"Roguin kinō ni mondai ga hassei shite imasu.",
+     vi:"Chức năng đăng nhập đang có vấn đề."},
+    {r:"病院様", ja:"現在ログインしづらい状態です。復旧対応を進めております。",
+     ro:"Genzai roguin shizurai jōtai desu. Fukkyū taiō o susumete orimasu.",
+     vi:"Hiện đang khó đăng nhập. Chúng tôi đang khôi phục."},
+    {g:"Server quá tải"},
+    {r:"エンジニア", ja:"シーピーユー使用率が九十パーセントを超えています。",
+     ro:"Shī pī yū shiyōritsu ga kyūjuppāsento o koete imasu.",
+     vi:"CPU đang vượt 90%."},
+    {r:"営業", ja:"システムの負荷が高くなっています。",
+     ro:"Shisutemu no fuka ga takaku natte imasu.",
+     vi:"Tải hệ thống đang cao."},
+    {r:"病院様", ja:"画面表示に時間がかかっております。",
+     ro:"Gamen hyōji ni jikan ga kakatte orimasu.",
+     vi:"Màn hình đang mất thời gian hiển thị."},
+    {g:"Batch đồng bộ dữ liệu fail"},
+    {r:"エンジニア", ja:"患者データ連携バッチが異常終了しました。",
+     ro:"Kanja dēta renkei batchi ga ijō shūryō shimashita.",
+     vi:"Batch liên kết dữ liệu bệnh nhân kết thúc bất thường."},
+    {r:"営業", ja:"データ更新処理に問題が発生しています。",
+     ro:"Dēta kōshin shori ni mondai ga hassei shite imasu.",
+     vi:"Xử lý cập nhật dữ liệu đang có vấn đề."},
+    {r:"病院様", ja:"一部の患者情報が最新の状態になっておりません。",
+     ro:"Ichibu no kanja jōhō ga saishin no jōtai ni natte orimasen.",
+     vi:"Một phần thông tin bệnh nhân chưa được cập nhật mới nhất."},
+    {g:"Liên kết API ngoài dừng"},
+    {r:"エンジニア", ja:"保険資格確認エーピーアイとの通信が失敗しています。",
+     ro:"Hoken shikaku kakunin ē pī ai to no tsūshin ga shippai shite imasu.",
+     vi:"Giao tiếp với API xác nhận bảo hiểm đang thất bại."},
+    {r:"営業", ja:"外部システムとの連携に問題が発生しています。",
+     ro:"Gaibu shisutemu to no renkei ni mondai ga hassei shite imasu.",
+     vi:"Liên kết với hệ thống bên ngoài đang có vấn đề."},
+    {r:"病院様", ja:"現在、受付での資格確認がご利用いただけない状態です。",
+     ro:"Genzai, uketsuke de no shikaku kakunin ga go-riyō itadakenai jōtai desu.",
+     vi:"Hiện không dùng được xác nhận bảo hiểm tại quầy tiếp nhận."},
+    {g:"Tóm tắt nội dung dài thành hai ý"},
+    {r:"要約", ja:"処方内容の編集機能です。保存時にエラーがあり、原因は調査中です。",
+     ro:"Shohō naiyō no henshū kinō desu. Hozon-ji ni erā ga ari, gen'in wa chōsa-chū desu.",
+     vi:"Là chức năng sửa nội dung kê đơn. Lúc lưu có lỗi, nguyên nhân đang điều tra."}
+  ]},
+
+{ id:"s7", tab:"⑦ 会話・困った時", title:"Hội thoại và câu cứu nguy",
+  lines:[
+    {g:"Được hỏi dạo này bận không"},
+    {r:"相手", ja:"最近、仕事は忙しいですか。",
+     ro:"Saikin, shigoto wa isogashii desu ka.",
+     vi:"Dạo này công việc bận không?"},
+    {r:"自分", ja:"そうですね、今は処方箋機能の開発を担当しておりまして、少し忙しいです。",
+     ro:"Sō desu ne, ima wa shohōsen kinō no kaihatsu o tantō shite orimashite, sukoshi isogashii desu.",
+     vi:"Dạ, hiện tôi phụ trách phát triển chức năng đơn thuốc nên hơi bận."},
+    {r:"自分", ja:"ただ、来週テストが終われば落ち着くと思います。〇〇さんはいかがですか。",
+     ro:"Tada, raishū tesuto ga owareba ochitsuku to omoimasu. Marumaru-san wa ikaga desu ka.",
+     vi:"Nhưng tuần sau test xong chắc sẽ đỡ. Còn anh/chị thì sao ạ?"},
+    {g:"Được hỏi về dự án mới"},
+    {r:"相手", ja:"新しいプロジェクトはどうですか。",
+     ro:"Atarashii purojekuto wa dō desu ka.",
+     vi:"Dự án mới thế nào?"},
+    {r:"自分", ja:"はい、少しずつ慣れてきました。ただ、医療の業務知識がまだ不足しているので、勉強しているところです。",
+     ro:"Hai, sukoshi zutsu narete kimashita. Tada, iryō no gyōmu chishiki ga mada fusoku shite iru node, benkyō shite iru tokoro desu.",
+     vi:"Dạ tôi đang quen dần. Nhưng kiến thức nghiệp vụ y tế còn thiếu nên đang học thêm."},
+    {r:"自分", ja:"業務の流れについては、どなたに伺うのがよろしいでしょうか。",
+     ro:"Gyōmu no nagare ni tsuite wa, donata ni ukagau no ga yoroshii deshō ka.",
+     vi:"Về luồng nghiệp vụ thì tôi nên hỏi ai ạ?"},
+    {g:"Chuyện cuối tuần"},
+    {r:"相手", ja:"週末、何をしていたんですか。",
+     ro:"Shūmatsu, nani o shite ita n desu ka.",
+     vi:"Cuối tuần bạn làm gì thế?"},
+    {r:"自分", ja:"家族と出かけました。天気がよかったので、公園に行きました。〇〇さんは何かされましたか。",
+     ro:"Kazoku to dekakemashita. Tenki ga yokatta node, kōen ni ikimashita. Marumaru-san wa nanika saremashita ka.",
+     vi:"Tôi đi chơi với gia đình. Trời đẹp nên ra công viên. Anh/chị có làm gì không ạ?"},
+    {g:"Chào người Nhật mới vào team"},
+    {r:"自分", ja:"こちらこそよろしくお願いします。私は〇〇と申します。処方箋まわりの開発を担当しております。",
+     ro:"Kochira koso yoroshiku onegai shimasu. Watashi wa marumaru to mōshimasu. Shohōsen mawari no kaihatsu o tantō shite orimasu.",
+     vi:"Rất mong được hợp tác. Tôi tên là 〇〇, phụ trách phát triển mảng đơn thuốc."},
+    {r:"自分", ja:"分からないことがあれば、いつでも聞いてください。",
+     ro:"Wakaranai koto ga areba, itsu demo kiite kudasai.",
+     vi:"Có gì không rõ cứ hỏi tôi bất cứ lúc nào."},
+    {g:"Được hỏi chuyện học tiếng Nhật"},
+    {r:"相手", ja:"日本語の勉強は大変ですか。",
+     ro:"Nihongo no benkyō wa taihen desu ka.",
+     vi:"Học tiếng Nhật có vất vả không?"},
+    {r:"自分", ja:"そうですね、敬語がまだ難しいです。特に、お客様への説明のときに迷うことがあります。",
+     ro:"Sō desu ne, keigo ga mada muzukashii desu. Toku ni, o-kyakusama e no setsumei no toki ni mayou koto ga arimasu.",
+     vi:"Dạ, kính ngữ vẫn còn khó. Nhất là lúc giải thích cho khách hàng, tôi hay phân vân."},
+    {r:"自分", ja:"自然な言い方を覚えるには、どうするのがよいと思われますか。",
+     ro:"Shizen na iikata o oboeru ni wa, dō suru no ga yoi to omowaremasu ka.",
+     vi:"Để nhớ được cách nói tự nhiên thì anh/chị nghĩ nên làm thế nào ạ?"},
+    {g:"Câu cứu nguy khi bí"},
+    {r:"時間", ja:"少しお時間をいただけますでしょうか。",
+     ro:"Sukoshi o-jikan o itadakemasu deshō ka.",
+     vi:"Cho tôi xin chút thời gian được không ạ?"},
+    {r:"聞き返し", ja:"恐れ入りますが、もう一度お願いできますでしょうか。",
+     ro:"Osoreirimasu ga, mō ichido onegai dekimasu deshō ka.",
+     vi:"Xin lỗi, anh/chị nói lại một lần nữa được không ạ?"},
+    {r:"速度", ja:"少しゆっくりお話しいただけますと助かります。",
+     ro:"Sukoshi yukkuri o-hanashi itadakemasu to tasukarimasu.",
+     vi:"Anh/chị nói chậm hơn một chút thì tôi cảm ơn ạ."},
+    {r:"保留", ja:"確認して、後ほどご連絡いたします。",
+     ro:"Kakunin shite, nochihodo go-renraku itashimasu.",
+     vi:"Tôi sẽ kiểm tra rồi liên hệ lại sau."},
+    {r:"仕切り直し", ja:"結論から申し上げますと、",
+     ro:"Ketsuron kara mōshiagemasu to,",
+     vi:"Nói từ kết luận trước thì là…"}
+  ]}
+];
+
+const $ = id => document.getElementById(id);
+const tabsEl=$("tabs"), listEl=$("list");
+const nowJa=$("nowJa"), nowRo=$("nowRo"), nowVi=$("nowVi"), nowRole=$("nowRole");
+const barFill=$("barFill"), bar=$("bar"), barLabel=$("barLabel");
+const runBtn=$("run"), stopBtn=$("stop");
+const rateSel=$("rate"), repsSel=$("reps"), gapSel=$("gap"), voiceSel=$("voice");
+const roBtn=$("toggleRo"), viBtn=$("toggleVi");
+
+let current=0, idx=-1, running=false, jaVoices=[], token=0;
+let showRo=true, showVi=true;
+
+/* ---------- settings ---------- */
+function loadPrefs(){
+  try{
+    const p=JSON.parse(localStorage.getItem("shadow.prefs")||"{}");
+    if(p.rate) rateSel.value=p.rate;
+    if(p.reps) repsSel.value=p.reps;
+    if(p.gap!==undefined) gapSel.value=p.gap;
+    if(p.showRo!==undefined) showRo=!!p.showRo;
+    if(p.showVi!==undefined) showVi=!!p.showVi;
+    if(p.set) { const i=SETS.findIndex(s=>s.id===p.set); if(i>=0) current=i; }
+    return p;
+  }catch(e){ return {}; }
+}
+function savePrefs(){
+  try{
+    localStorage.setItem("shadow.prefs", JSON.stringify({
+      rate:rateSel.value, reps:repsSel.value, gap:gapSel.value,
+      showRo:showRo, showVi:showVi, set:SETS[current].id, voice:voiceSel.value
+    }));
+  }catch(e){}
+}
+const prefs=loadPrefs();
+
+/* ---------- voices ---------- */
+function fillVoices(){
+  const all = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  jaVoices = all.filter(v => (v.lang||"").toLowerCase().startsWith("ja"));
+  voiceSel.innerHTML="";
+  if(!jaVoices.length){ $("novoice").hidden=false; voiceSel.disabled=true; return; }
+  $("novoice").hidden=true; voiceSel.disabled=false;
+  jaVoices.forEach(v=>{
+    const o=document.createElement("option"); o.value=v.name; o.textContent=v.name; voiceSel.appendChild(o);
+  });
+  if(prefs.voice && jaVoices.some(v=>v.name===prefs.voice)) voiceSel.value=prefs.voice;
+}
+if(window.speechSynthesis){
+  fillVoices();
+  speechSynthesis.onvoiceschanged = fillVoices;
+}else{
+  $("novoice").hidden=false;
+}
+
+/* ---------- render ---------- */
+function renderTabs(){
+  tabsEl.innerHTML="";
+  SETS.forEach((s,i)=>{
+    const b=document.createElement("button");
+    b.type="button"; b.setAttribute("role","tab");
+    b.setAttribute("aria-selected", i===current ? "true":"false");
+    const sp=document.createElement("span"); sp.className="jp"; sp.textContent=s.tab;
+    b.appendChild(sp);
+    b.onclick=()=>{ stop(); current=i; idx=-1; renderTabs(); renderList(); clearStage(); savePrefs(); };
+    tabsEl.appendChild(b);
+  });
+}
+function speakable(){ return SETS[current].lines.map((l,i)=>({...l,i})).filter(l=>l.ja); }
+function span(cls, text){
+  const s=document.createElement("span"); s.className=cls; s.textContent=text; return s;
+}
+function renderList(){
+  listEl.innerHTML="";
+  SETS[current].lines.forEach((l,i)=>{
+    const li=document.createElement("li"); li.dataset.i=i;
+    if(l.g){
+      const d=span("sep", l.g); d.style.padding="12px 0 4px";
+      li.appendChild(d); li.style.background="transparent";
+      listEl.appendChild(li); return;
+    }
+    const b=document.createElement("button"); b.type="button";
+    b.appendChild(span("l-role jp", l.r||""));
+    b.appendChild(span("l-ja jp", l.ja));
+    b.appendChild(span("l-ro"+(showRo?"":" hidden"), l.ro||""));
+    b.appendChild(span("l-vi"+(showVi?"":" hidden"), l.vi||""));
+    b.onclick=()=>{ stop(); playOne(i); };
+    li.appendChild(b); listEl.appendChild(li);
+  });
+}
+function clearStage(){
+  nowJa.textContent="—"; nowRo.textContent=""; nowVi.textContent=""; nowRole.textContent="";
+  setBar(0); barLabel.textContent="Sẵn sàng";
+}
+function highlight(i){
+  [...listEl.children].forEach(li=>li.classList.toggle("on", +li.dataset.i===i));
+  const li=[...listEl.children].find(x=>+x.dataset.i===i);
+  if(li) li.scrollIntoView({block:"nearest", behavior:"smooth"});
+}
+function show(l){
+  nowRole.textContent=l.r||""; nowJa.textContent=l.ja;
+  nowRo.textContent=l.ro||""; nowRo.classList.toggle("hidden", !showRo);
+  nowVi.textContent=l.vi||""; nowVi.classList.toggle("hidden", !showVi);
+}
+function setBar(p, echo){
+  bar.classList.toggle("echo", !!echo);
+  barFill.style.transition="none";
+  barFill.style.width=(p*100)+"%";
+}
+function animBar(ms, echo){
+  bar.classList.toggle("echo", !!echo);
+  barFill.style.transition="none"; barFill.style.width="0%";
+  void barFill.offsetWidth;
+  barFill.style.transition="width "+ms+"ms linear";
+  barFill.style.width="100%";
+}
+
+/* ---------- toggles ---------- */
+function applyRo(){
+  roBtn.setAttribute("aria-pressed", showRo?"true":"false");
+  roBtn.textContent="Romaji: "+(showRo?"bật":"tắt");
+  document.querySelectorAll(".l-ro").forEach(e=>e.classList.toggle("hidden", !showRo));
+  nowRo.classList.toggle("hidden", !showRo);
+}
+function applyVi(){
+  viBtn.setAttribute("aria-pressed", showVi?"true":"false");
+  viBtn.textContent="Nghĩa Việt: "+(showVi?"bật":"tắt");
+  document.querySelectorAll(".l-vi").forEach(e=>e.classList.toggle("hidden", !showVi));
+  nowVi.classList.toggle("hidden", !showVi);
+}
+
+/* ---------- speech ---------- */
+function speak(text){
+  return new Promise(resolve=>{
+    if(!window.speechSynthesis){ resolve(1500); return; }
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang="ja-JP"; u.rate=parseFloat(rateSel.value);
+    const v=jaVoices.find(x=>x.name===voiceSel.value)||jaVoices[0];
+    if(v) u.voice=v;
+    const t0=performance.now();
+    let done=false;
+    const finish=()=>{ if(done) return; done=true; resolve(performance.now()-t0); };
+    u.onend=finish; u.onerror=finish;
+    speechSynthesis.speak(u);
+    setTimeout(()=>{ if(!done && !speechSynthesis.speaking) finish(); }, 400);
+  });
+}
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+
+async function playOne(i){
+  const l=SETS[current].lines[i];
+  if(!l || !l.ja) return;
+  idx=i; show(l); highlight(i);
+  barLabel.textContent="Đang phát";
+  animBar(Math.max(900, l.ja.length*110/parseFloat(rateSel.value)));
+  await speak(l.ja);
+  setBar(0); barLabel.textContent="Sẵn sàng";
+}
+
+async function run(){
+  const seq=speakable();
+  if(!seq.length) return;
+  running=true; const my=++token;
+  runBtn.disabled=true; stopBtn.disabled=false;
+  let start=seq.findIndex(l=>l.i===idx);
+  if(start<0) start=0;
+  for(let k=start;k<seq.length;k++){
+    const l=seq[k];
+    for(let r=0;r<parseInt(repsSel.value,10);r++){
+      if(!running||my!==token) return cleanup();
+      idx=l.i; show(l); highlight(l.i);
+      barLabel.textContent="Đang phát — lần "+(r+1);
+      animBar(Math.max(900, l.ja.length*110/parseFloat(rateSel.value)));
+      const dur=await speak(l.ja);
+      if(!running||my!==token) return cleanup();
+      const g=parseFloat(gapSel.value)*dur;
+      if(g>150){
+        barLabel.textContent="Đến lượt bạn — nói theo";
+        animBar(g, true);
+        await wait(g);
+      }
+      if(!running||my!==token) return cleanup();
+    }
+    await wait(250);
+  }
+  cleanup("Hết mục. Nghe lại từ đầu hoặc chuyển mục khác.");
+}
+function cleanup(msg){
+  running=false; runBtn.disabled=false; stopBtn.disabled=true;
+  setBar(0); barLabel.textContent=msg||"Sẵn sàng";
+}
+function stop(){
+  running=false; token++;
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  cleanup("Đã dừng");
+}
+
+/* ---------- wiring ---------- */
+runBtn.onclick=()=>{ if(!running) run(); };
+stopBtn.onclick=stop;
+roBtn.onclick=()=>{ showRo=!showRo; applyRo(); savePrefs(); };
+viBtn.onclick=()=>{ showVi=!showVi; applyVi(); savePrefs(); };
+[rateSel,repsSel,gapSel,voiceSel].forEach(el=>el.onchange=savePrefs);
+document.addEventListener("keydown", e=>{
+  if(e.target.tagName==="SELECT"||e.target.tagName==="INPUT"||e.target.tagName==="BUTTON") return;
+  if(e.code==="Space"){ e.preventDefault(); running?stop():run(); }
+  const k=e.key.toLowerCase();
+  if(k==="r"&&idx>=0){ stop(); playOne(idx); }
+  if(k==="b"){ showRo=!showRo; applyRo(); savePrefs(); }
+  if(k==="v"){ showVi=!showVi; applyVi(); savePrefs(); }
+});
+window.addEventListener("beforeunload", ()=>{ if(window.speechSynthesis) speechSynthesis.cancel(); });
+
+renderTabs(); renderList(); applyRo(); applyVi(); clearStage();
+</script>
+</body>
+</html>
