@@ -3,7 +3,7 @@
 Trang luyện shadowing tiếng Nhật cho developer làm dự án hệ thống bệnh viện và đơn thuốc
 (電子カルテ・処方箋システム). Một file HTML tĩnh, chạy offline, không cần cài gì.
 
-**Bản deploy:** https://<user>.github.io/IT-shadowing/ (cập nhật link sau khi bật GitHub Pages)
+**Bản deploy:** https://nkocvodoi.github.io/IT-Shadowing/
 
 ## Cách luyện
 
