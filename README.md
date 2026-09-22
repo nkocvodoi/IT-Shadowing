@@ -51,8 +51,9 @@ python3 -m http.server 8000
 
 ## Deploy
 
-`.github/workflows/deploy.yml` tự bật GitHub Pages và publish toàn bộ repo mỗi lần push vào `main`.
-Nếu tổ chức chặn việc tự bật, vào Settings → Pages → Source: GitHub Actions rồi chạy lại workflow.
+GitHub Pages lấy thẳng từ nhánh: Settings → Pages → Source **Deploy from a branch**, chọn `main`
+và thư mục `/ (root)`. Mỗi lần push vào `main` là GitHub tự build lại, không cần Actions.
+File `.nojekyll` để Jekyll khỏi đụng vào nội dung.
 
 ## Thêm hoặc sửa câu
 
