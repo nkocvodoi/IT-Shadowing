@@ -1,7 +1,7 @@
 # IT-shadowing
 
-Trang luyện shadowing tiếng Nhật cho developer làm dự án hệ thống bệnh viện và đơn thuốc
-(電子カルテ・処方箋システム). Một file HTML tĩnh, chạy offline, không cần cài gì.
+Trang luyện shadowing tiếng Nhật cho developer làm chức năng đặt lịch khám của hệ thống
+bệnh viện (診察予約システム). Một file HTML tĩnh, chạy offline, không cần cài gì.
 
 **Bản deploy:** https://nkocvodoi.github.io/IT-Shadowing/
 
