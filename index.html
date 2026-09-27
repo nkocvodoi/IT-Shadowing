@@ -61,9 +61,30 @@ nav::-webkit-scrollbar{display:none}
 nav button{
   flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;
   padding:9px 12px;color:var(--ink-soft);font:inherit;font-size:13.5px;cursor:pointer;white-space:nowrap;
+  display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;
 }
 nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--indigo);font-weight:600}
 nav button:focus-visible{outline:2px solid var(--indigo);outline-offset:-2px}
+.t-name{font-size:11.5px;font-weight:400;color:var(--ink-soft);letter-spacing:.01em}
+nav button[aria-selected="true"] .t-name{color:var(--indigo)}
+
+.about{
+  background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  border-radius:3px;padding:16px 18px 15px;margin-bottom:18px;
+}
+.about h2{margin:0;font-size:15px;font-weight:600;letter-spacing:.01em}
+.about .lead{margin:7px 0 0;color:var(--ink-soft);font-size:13px;max-width:62ch}
+.about dl{margin:14px 0 0;display:grid;grid-template-columns:auto 1fr;gap:7px 16px;align-items:baseline}
+.about dt{display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+.about dt .jp{font-size:15px;color:var(--ink)}
+.t-ro{font-size:11.5px;color:var(--echo);letter-spacing:.01em}
+.t-vi{font-size:12px;color:var(--ink-soft)}
+.about dd{margin:0;font-size:12.5px;color:var(--ink-soft);max-width:58ch}
+.about .when{
+  margin:14px 0 0;padding-top:11px;border-top:1px solid var(--rule);
+  font-size:12.5px;color:var(--ink-soft);max-width:62ch;
+}
+.about .when b{color:var(--ink);font-weight:600}
 
 .stage{
   background:var(--card);border:1px solid var(--rule);border-radius:3px;
@@ -129,6 +150,9 @@ ol.lines li.on .l-ja{color:var(--indigo)}
   ol.lines button{grid-template-columns:1fr;gap:3px}
   .l-ro,.l-vi{grid-column:1}
   .l-role{padding-top:0}
+  .about dl{grid-template-columns:1fr;gap:2px}
+  .about dt{white-space:normal;flex-wrap:wrap}
+  .about dd{margin:0 0 9px}
 }
 </style>
 </head>
@@ -145,6 +169,8 @@ ol.lines li.on .l-ja{color:var(--indigo)}
 </div>
 
 <nav id="tabs" role="tablist"></nav>
+
+<section class="about" id="about" aria-live="polite"></section>
 
 <section class="stage" aria-live="polite">
   <div class="role jp" id="nowRole"></div>
@@ -200,7 +226,14 @@ ol.lines li.on .l-ja{color:var(--indigo)}
 
 <script>
 const SETS = [
-{ id:"s1", tab:"① 結論→理由→提案", title:"Kết luận trước",
+{ id:"s1", tab:"① 結論→理由→提案", title:"Nói kết luận trước",
+  lead:"Khung ba bước để đưa một ý kiến: nói ngay điều mình muốn, rồi mới giải thích, rồi mở đường cho người nghe quyết. Người Nhật trong công việc chờ nghe kết luận ngay ở câu đầu, nên kể lể trước rồi mới chốt là dễ mất người nghe.",
+  terms:[
+    ["結論","ketsuron","kết luận","Điều mình muốn nói, đặt ở câu đầu tiên. Đóng câu bằng 〜した方がよいと思います để vừa rõ ý vừa không áp đặt."],
+    ["理由","riyū","lý do","Căn cứ cho kết luận, mở bằng 理由は〜ためです. Nên kèm con số hoặc sự việc kiểm chứng được, tránh cảm tính."],
+    ["提案","teian","đề xuất","Hướng xử lý cụ thể, để ngỏ quyền quyết cho người nghe. Đóng bằng 〜てはいかがでしょうか hoặc ご検討いただけますでしょうか."]
+  ],
+  when:"Họp tiến độ, báo cáo với leader người Nhật, câu mở đầu một mail xin quyết định. Lúc bị hỏi đột ngột mà chưa kịp sắp ý, cứ bám ba bước này là câu trả lời vẫn gọn.",
   lines:[
     {g:"Hoãn release vì test chưa xong"},
     {r:"結論", ja:"処方箋発行機能のリリースを1週間延期した方がよいと思います。",
@@ -255,6 +288,14 @@ const SETS = [
   ]},
 
 { id:"s2", tab:"② 問題→原因→影響→対応", title:"Báo sự cố",
+  lead:"Khung bốn bước khi hệ thống đang có chuyện. Trong tiếng Nhật công sở, bản báo sự cố gọi là 障害報告 và gần như luôn đi theo đúng thứ tự này: nghe xong bốn câu là người ta biết chuyện gì, vì đâu, ai chịu ảnh hưởng và bao giờ xong.",
+  terms:[
+    ["問題","mondai","sự cố","Hiện tượng đang xảy ra. Nói bằng sự việc quan sát được kèm màn hình và thời điểm, chưa vội đoán nguyên nhân."],
+    ["原因","gen'in","nguyên nhân","Cái gây ra sự cố. Chưa tìm ra thì nói thẳng 現在調査中です, đừng lấp liếm bằng phỏng đoán."],
+    ["影響","eikyō","ảnh hưởng","Ai bị, màn hình nào, bao nhiêu người, có mất dữ liệu không. Phía bệnh viện quan tâm mục này nhất."],
+    ["対応","taiō","cách xử lý","Việc đang làm, cách chữa tạm cho người dùng, và mốc thời gian dự kiến khôi phục."]
+  ],
+  when:"Ngay khi phát hiện sự cố trên production, trong chat khẩn, trong mail 障害報告 gửi khách, và trong buổi họp rà lại sau sự cố.",
   lines:[
     {g:"Không phát hành được đơn thuốc trên production"},
     {r:"問題", ja:"本番環境で処方箋が発行できない事象が発生しています。",
@@ -336,7 +377,17 @@ const SETS = [
      vi:"Đang sửa. Sau khi điều tra phạm vi ảnh hưởng sẽ báo cáo trong hôm nay."}
   ]},
 
-{ id:"s3", tab:"③ 確認・質問", title:"Xác nhận yêu cầu",
+{ id:"s3", tab:"③ 確認・質問", title:"Hỏi lại cho chắc",
+  lead:"Câu để hỏi lại trước khi bắt tay làm. Hiểu sai spec mà làm xong mới lộ thì mất cả tuần, nên phía Nhật xem việc hỏi sớm là cẩn thận chứ không phải là kém. Mỗi câu hỏi nhắm vào một chỗ dễ hiểu lệch.",
+  terms:[
+    ["確認","kakunin","xác nhận","Nhắc lại điều mình hiểu để người kia gật hoặc sửa, đóng bằng 〜という理解でよろしいでしょうか."],
+    ["質問","shitsumon","câu hỏi","Hỏi phần chưa rõ. Mở bằng 一点よろしいでしょうか để báo trước là sắp hỏi, người nghe đỡ bị cắt ngang."],
+    ["範囲","han'i","phạm vi","Làm tới đâu thì dừng, cái gì để lại lần sau. Chốt sớm mục này thì sau không bị đòi thêm việc."],
+    ["詳細","shōsai","chi tiết","Điều kiện cụ thể: tìm kiếm theo trường nào, khớp đúng hay khớp một phần, sắp xếp ra sao."],
+    ["権限","kengen","quyền","Vai người dùng nào được xem, được sửa. Dính tới dữ liệu bệnh nhân thì luôn phải hỏi mục này."],
+    ["納期","nōki","hạn bàn giao","Mốc mong muốn. Biết hạn trước mới ước lượng được là cắt gì và giữ gì."]
+  ],
+  when:"Lúc nhận spec, trong buổi 要件確認, khi đọc tài liệu thấy chỗ mơ hồ. Hỏi trước khi viết code, đừng đợi tới lúc test mới lòi ra.",
   lines:[
     {g:"Hai câu xương sống"},
     {r:"確認", ja:"という理解で合っていますでしょうか。",
@@ -403,7 +454,14 @@ const SETS = [
      vi:"Xin lỗi, anh/chị giải thích kỹ hơn về luồng nghiệp vụ được không ạ?"}
   ]},
 
-{ id:"s4", tab:"④ やわらかい提案", title:"Đề xuất mềm mại",
+{ id:"s4", tab:"④ やわらかい提案", title:"Đề xuất kiểu mềm",
+  lead:"Cùng một ý, đổi cách đóng câu thì từ ra lệnh thành mời bàn. やわらかい nghĩa đen là mềm; ở đây là lối nói không khẳng định dứt khoát, chừa chỗ cho người nghe quyết. Nói như vậy dễ được nghe hơn, và khi mình chưa chắc thì cũng không bị bắt bẻ sau.",
+  terms:[
+    ["柔らか","yawaraka","cách nói mềm","Bỏ khẳng định thẳng, thay bằng 〜かもしれません, 〜いかがでしょうか, ご検討いただけますでしょうか. Ví dụ đổi バグです thành 想定と異なる動作を確認しました để nêu sự việc mà không quy lỗi."],
+    ["提案","teian","đề xuất","Nêu hướng làm kèm mục đích, thường mở bằng 品質向上のために rồi mới tới việc cần làm."],
+    ["効果","kōka","cái được","Lợi ích sau khi làm theo. Nói bằng con số hoặc bằng thứ người nghe quan tâm thì đề xuất mới đứng được."]
+  ],
+  when:"Góp ý thiết kế của người khác, xin đổi spec, từ chối khéo một lịch không kham nổi, báo một chỗ mình nghi là bug mà chưa chắc. Cột trên cùng của mục này xếp câu mạnh cạnh câu mềm để so, chỉ cần nói theo câu mềm.",
   lines:[
     {g:"Câu mạnh → câu mềm (chỉ shadow câu mềm)"},
     {r:"柔らか", ja:"こちらの設計はいかがでしょうか。",
@@ -468,7 +526,15 @@ const SETS = [
      vi:"Nếu có thêm 2 ngày, dự kiến test sẽ xong hết."}
   ]},
 
-{ id:"s5", tab:"⑤ 反対意見", title:"Phản đối lịch sự",
+{ id:"s5", tab:"⑤ 反対意見", title:"Phản đối mà không mất lòng",
+  lead:"反対意見 là ý kiến ngược. Khung bốn bước để nói khác ý cấp trên hoặc khách mà không làm ai mất mặt: ghi nhận trước, rồi mới nêu chỗ khó, kèm căn cứ, và chốt bằng một lối đi khác.",
+  terms:[
+    ["共感","kyōkan","ghi nhận","Nói rõ mình hiểu ý người kia trước, chẳng hạn おっしゃることはよく分かります. Bỏ bước này thì ba bước sau nghe thành cãi."],
+    ["反対","hantai","nêu chỗ khó","Không nói 違います. Nói 〜は難しいかもしれません hoặc 〜は risk が高いと思います, tức chỉ vào việc chứ không vào người."],
+    ["理由","riyū","căn cứ","Dựa trên rủi ro cụ thể. Trong dự án bệnh viện, rủi ro chạm tới an toàn người bệnh là lập luận có sức nặng nhất."],
+    ["提案","teian","lối đi khác","Bắt buộc phải có. Phản đối mà không kèm phương án thì bị hiểu là đùn việc."]
+  ],
+  when:"Khi sếp muốn giữ đúng lịch release dù test chưa xong, khi bị yêu cầu cắt test cho kịp hạn, khi thấy thiết kế phía Nhật có lỗ hổng.",
   lines:[
     {g:"Sếp muốn release đúng lịch"},
     {r:"共感", ja:"おっしゃることは分かります。",
@@ -538,6 +604,14 @@ const SETS = [
   ]},
 
 { id:"s6", tab:"⑥ 相手別", title:"Đổi cách nói theo người nghe",
+  lead:"相手 là người đối diện, 別 là phân theo. Một sự việc, ba cách kể: lượng chi tiết kỹ thuật phải cắt dần theo khoảng cách của người nghe với hệ thống. Mỗi nhóm câu bên dưới là cùng một sự cố nói lại cho ba người khác nhau.",
+  terms:[
+    ["エンジニア","enjinia","kỹ sư","Nói thẳng tên thành phần, mã lỗi, con số: 認証サーバー, 五百エラー, シーピーユー使用率."],
+    ["営業","eigyō","kinh doanh","Nói theo chức năng mà người dùng nhìn thấy, bỏ hết tên máy móc: không nói lỗi 500 mà nói chức năng đăng nhập đang có vấn đề."],
+    ["病院様","byōin-sama","phía bệnh viện","Nói theo cái họ đang gặp, kèm việc mình đang làm để chữa. Hậu tố 様 và thể 〜ております là bắt buộc."],
+    ["要約","yōyaku","tóm ý","Gói chuyện dài thành hai câu: một câu tình hình, một câu hướng xử lý."]
+  ],
+  when:"Cùng một sự cố nhưng phải báo ba nơi, hoặc khi có khách ngồi chung phòng họp. Chọn sai mức chi tiết là nguồn hiểu nhầm hay gặp nhất trong dự án offshore.",
   lines:[
     {g:"Lỗi server xác thực"},
     {r:"エンジニア", ja:"認証サーバーで五百エラーが発生しています。",
@@ -585,7 +659,18 @@ const SETS = [
      vi:"Là chức năng sửa nội dung kê đơn. Lúc lưu có lỗi, nguyên nhân đang điều tra."}
   ]},
 
-{ id:"s7", tab:"⑦ 会話・困った時", title:"Hội thoại và câu cứu nguy",
+{ id:"s7", tab:"⑦ 会話・困った時", title:"Trò chuyện và gỡ bí",
+  lead:"会話 là chuyện trò thường ngày, 困った時 là lúc bí. Nửa đầu là câu giữ quan hệ ngoài giờ họp, nửa sau là bộ câu để thoát khi nghe không kịp hoặc hết từ. Có sẵn mấy câu này thì không rơi vào im lặng, mà im lặng mới là thứ làm người Nhật khó xử.",
+  terms:[
+    ["相手","aite","người kia","Câu người Nhật thường hỏi mình. Nghe quen để đoán được câu tiếp theo."],
+    ["自分","jibun","mình","Câu mình đáp. Đáp xong nên hỏi ngược lại bằng 〇〇さんはいかがですか để giữ mạch chuyện."],
+    ["聞き返し","kikikaeshi","hỏi lại","Xin nhắc lại, mở bằng 恐れ入りますが. Hỏi lại một lần vẫn lịch sự hơn là gật đại rồi làm sai."],
+    ["速度","sokudo","tốc độ","Xin người kia nói chậm hơn: 少しゆっくりお話しいただけますと助かります."],
+    ["時間","jikan","xin thời gian","Câu kéo giờ khi cần vài giây sắp ý: 少しお時間をいただけますでしょうか."],
+    ["保留","horyū","khất lại","Chưa trả lời được thì hẹn kiểm tra rồi báo lại, đừng đoán bừa: 確認して、後ほどご連絡いたします."],
+    ["仕切り直し","shikirinaoshi","nói lại từ đầu","Khi câu đang rối thì tự cắt ngang mình và mở lại bằng 結論から申し上げますと."]
+  ],
+  when:"Năm phút đầu buổi họp, lúc ăn trưa, buổi chào người mới vào team, và bất cứ lúc nào mất mạch giữa cuộc nói chuyện.",
   lines:[
     {g:"Được hỏi dạo này bận không"},
     {r:"相手", ja:"最近、仕事は忙しいですか。",
@@ -651,7 +736,7 @@ const SETS = [
 ];
 
 const $ = id => document.getElementById(id);
-const tabsEl=$("tabs"), listEl=$("list");
+const tabsEl=$("tabs"), listEl=$("list"), aboutEl=$("about");
 const nowJa=$("nowJa"), nowRo=$("nowRo"), nowVi=$("nowVi"), nowRole=$("nowRole");
 const barFill=$("barFill"), bar=$("bar"), barLabel=$("barLabel");
 const runBtn=$("run"), stopBtn=$("stop");
@@ -710,11 +795,45 @@ function renderTabs(){
     const b=document.createElement("button");
     b.type="button"; b.setAttribute("role","tab");
     b.setAttribute("aria-selected", i===current ? "true":"false");
-    const sp=document.createElement("span"); sp.className="jp"; sp.textContent=s.tab;
-    b.appendChild(sp);
-    b.onclick=()=>{ stop(); current=i; idx=-1; renderTabs(); renderList(); clearStage(); savePrefs(); };
+    b.appendChild(span("jp", s.tab));
+    b.appendChild(span("t-name", s.title));
+    b.onclick=()=>{ stop(); current=i; idx=-1; renderTabs(); renderAbout(); renderList(); clearStage(); savePrefs(); };
     tabsEl.appendChild(b);
   });
+}
+/* Chen cac doan tieng Nhat lan trong cau tieng Viet vao span .jp de dung font minh */
+const JA_RUN=/[\u3000-\u30FF\u4E00-\u9FFF\uFF01-\uFF60]+/g;
+function mixed(node, text){
+  let last=0, m; JA_RUN.lastIndex=0;
+  while((m=JA_RUN.exec(text))!==null){
+    if(m.index>last) node.appendChild(document.createTextNode(text.slice(last,m.index)));
+    node.appendChild(span("jp", m[0]));
+    last=m.index+m[0].length;
+  }
+  if(last<text.length) node.appendChild(document.createTextNode(text.slice(last)));
+  return node;
+}
+function renderAbout(){
+  const s=SETS[current];
+  aboutEl.innerHTML="";
+  const h=document.createElement("h2"); h.textContent=s.title; aboutEl.appendChild(h);
+  const lead=document.createElement("p"); lead.className="lead";
+  aboutEl.appendChild(mixed(lead, s.lead));
+  const dl=document.createElement("dl");
+  s.terms.forEach(([ja,ro,vi,note])=>{
+    const dt=document.createElement("dt");
+    dt.appendChild(span("jp", ja));
+    dt.appendChild(span("t-ro", ro));
+    dt.appendChild(span("t-vi", vi));
+    const dd=document.createElement("dd");
+    mixed(dd, note);
+    dl.appendChild(dt); dl.appendChild(dd);
+  });
+  aboutEl.appendChild(dl);
+  const w=document.createElement("p"); w.className="when";
+  const lb=document.createElement("b"); lb.textContent="Dùng khi: ";
+  w.appendChild(lb); mixed(w, s.when);
+  aboutEl.appendChild(w);
 }
 function speakable(){ return SETS[current].lines.map((l,i)=>({...l,i})).filter(l=>l.ja); }
 function span(cls, text){
@@ -862,7 +981,7 @@ document.addEventListener("keydown", e=>{
 });
 window.addEventListener("beforeunload", ()=>{ if(window.speechSynthesis) speechSynthesis.cancel(); });
 
-renderTabs(); renderList(); applyRo(); applyVi(); clearStage();
+renderTabs(); renderAbout(); renderList(); applyRo(); applyVi(); clearStage();
 </script>
 </body>
 </html>

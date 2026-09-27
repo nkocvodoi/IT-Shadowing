@@ -20,15 +20,18 @@ Phím tắt: `Space` chạy/dừng · `R` nghe lại câu hiện tại · `B` b�
 
 ## Nội dung
 
-| Mục | Khung câu |
-| --- | --- |
-| ① | 結論 → 理由 → 提案 |
-| ② | 問題 → 原因 → 影響 → 対応 |
-| ③ | Xác nhận yêu cầu, hỏi khi chưa hiểu |
-| ④ | Đề xuất mềm mại: 理由 → 提案 → 効果 |
-| ⑤ | Phản đối lịch sự: 共感 → 反対 → 理由 → 提案 |
-| ⑥ | Đổi cách nói theo người nghe (エンジニア・営業・病院様) |
-| ⑦ | Hội thoại 1-1 và câu cứu nguy khi bí |
+| Mục | Tên | Khung câu |
+| --- | --- | --- |
+| ① | Nói kết luận trước | 結論 → 理由 → 提案 |
+| ② | Báo sự cố | 問題 → 原因 → 影響 → 対応 |
+| ③ | Hỏi lại cho chắc | 確認・質問・範囲・詳細・権限・納期 |
+| ④ | Đề xuất kiểu mềm | 柔らか → 提案 → 効果 |
+| ⑤ | Phản đối mà không mất lòng | 共感 → 反対 → 理由 → 提案 |
+| ⑥ | Đổi cách nói theo người nghe | エンジニア・営業・病院様・要約 |
+| ⑦ | Trò chuyện và gỡ bí | 会話・聞き返し・保留・仕切り直し |
+
+Mỗi mục có một thẻ giải nghĩa ngay dưới thanh tab: từ tiếng Nhật đặt tên cho mục nghĩa là gì,
+từng thành phần trong khung câu đảm nhiệm việc gì, và ngữ cảnh nào thì mang khung đó ra dùng.
 
 ## Giọng đọc
 
